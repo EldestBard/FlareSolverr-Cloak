@@ -11,6 +11,14 @@ import urllib.parse
 from selenium.webdriver.chrome.webdriver import WebDriver
 import undetected_chromedriver as uc
 
+# Try to import CloakWebDriver for CloakBrowser integration
+try:
+    from cloak_webdriver import CloakWebDriver as CloakDriver
+    HAS_CLOAK_WEBDRIVER = True
+except ImportError:
+    HAS_CLOAK_WEBDRIVER = False
+    CloakDriver = None
+
 FLARESOLVERR_VERSION = None
 PLATFORM_VERSION = None
 CHROME_EXE_PATH = None
@@ -50,6 +58,19 @@ def get_current_platform() -> str:
         return PLATFORM_VERSION
     PLATFORM_VERSION = os.name
     return PLATFORM_VERSION
+
+
+def get_cloak_webdriver(proxy: dict = None) -> CloakDriver:
+    """
+    Create a CloakWebDriver instance for CloakBrowser.
+    This is used when HAS_CLOAK_WEBDRIVER is True to bypass Cloudflare.
+    """
+    if not HAS_CLOAK_WEBDRIVER:
+        raise Exception("CloakWebDriver not available. Please install cloak_webdriver.")
+
+    logging.debug('Launching CloakBrowser (CloakWebDriver)...')
+    driver = CloakDriver(proxy=proxy, headless=get_config_headless())
+    return driver
 
 
 def create_proxy_extension(proxy: dict) -> str:
