@@ -4,7 +4,15 @@ from datetime import datetime, timedelta
 from typing import Optional, Tuple
 from uuid import uuid1
 
-from selenium.webdriver.chrome.webdriver import WebDriver
+# Use CloakWebDriver if available, fallback to Selenium WebDriver
+try:
+    from cloak_webdriver import CloakWebDriver
+    DriverType = CloakWebDriver
+    USE_CLOAK = True
+except ImportError:
+    from selenium.webdriver.chrome.webdriver import WebDriver
+    DriverType = WebDriver
+    USE_CLOAK = False
 
 import utils
 
@@ -12,7 +20,7 @@ import utils
 @dataclass
 class Session:
     session_id: str
-    driver: WebDriver
+    driver: DriverType
     created_at: datetime
 
     def lifetime(self) -> timedelta:
@@ -45,7 +53,10 @@ class SessionsStorage:
         if self.exists(session_id):
             return self.sessions[session_id], False
 
-        driver = utils.get_webdriver(proxy)
+        if USE_CLOAK:
+            driver = CloakWebDriver(proxy=proxy)
+        else:
+            driver = utils.get_webdriver(proxy)
         created_at = datetime.now()
         session = Session(session_id, driver, created_at)
 
