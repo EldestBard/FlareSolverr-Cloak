@@ -43,7 +43,7 @@ RUN dpkg -i /libgl1-mesa-dri.deb \
 # See: https://github.com/CloakHQ/CloakBrowser
 ENV CLOAKBROWSER_VERSION=chromium-v146.0.7680.177.4 \
     CLOAKBROWSER_PATH=/usr/local/bin/cloak-browser
-RUN curl -sL https://github.com/CloakHQ/CloakBrowser/releases/download/v${CLOAKBROWSER_VERSION}/cloakbrowser-linux-x64.tar.gz \
+RUN curl -sL https://github.com/CloakHQ/CloakBrowser/releases/download/${CLOAKBROWSER_VERSION}/cloakbrowser-linux-x64.tar.gz \
     -o /tmp/cloakbrowser.tar.gz \
     && tar -xzf /tmp/cloakbrowser.tar.gz -C /opt \
     && ln -sf /opt/cloakbrowser-linux-x64/cloakbrowser ${CLOAKBROWSER_PATH} \
