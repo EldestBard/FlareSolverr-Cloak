@@ -7,7 +7,7 @@ RUN apt-get update \
     && printf 'Section: misc\nPriority: optional\nStandards-Version: 3.9.2\nPackage: libgl1-mesa-dri\nVersion: 99.0.0\nDescription: Dummy package for libgl1-mesa-dri\n' >> libgl1-mesa-dri \
     && equivs-build libgl1-mesa-dri \
     && mv libgl1-mesa-dri_*.deb /libgl1-mesa-dri.deb \
-    && equivs-control adwaita-icon-theme \
+    && equivs-control adwaiticona-theme \
     && printf 'Section: misc\nPriority: optional\nStandards-Version: 3.9.2\nPackage: adwaita-icon-theme\nVersion: 99.0.0\nDescription: Dummy package for adwaita-icon-theme\n' >> adwaita-icon-theme \
     && equivs-build adwaita-icon-theme \
     && mv adwaita-icon-theme_*.deb /adwaita-icon-theme.deb
@@ -18,13 +18,9 @@ FROM python:3.13-slim-bookworm
 COPY --from=builder /*.deb /
 
 # Install dependencies and create flaresolverr user
-# You can test Chromium running this command inside the container:
-#    xvfb-run -s "-screen 0 1600x1200x24" chromium --no-sandbox
-# The error traces is like this: "*** stack smashing detected ***: terminated"
-# To check the package versions available you can use this command:
-#    apt-cache madison chromium
 WORKDIR /app
-    # Install dummy packages
+
+# Install dummy packages to satisfy chromium dependencies
 RUN dpkg -i /libgl1-mesa-dri.deb \
     && dpkg -i /adwaita-icon-theme.deb \
     # Install dependencies
@@ -43,11 +39,22 @@ RUN dpkg -i /libgl1-mesa-dri.deb \
     && mkdir /config \
     && chown flaresolverr:flaresolverr /config
 
+# Download and install CloakBrowser for anti-detection browsing
+# See: https://github.com/CloakHQ/CloakBrowser
+ENV CLOAKBROWSER_VERSION=1.0.0 \
+    CLOAKBROWSER_PATH=/usr/local/bin/cloak-browser
+RUN curl -sL https://github.com/CloakHQ/CloakBrowser/releases/download/v${CLOAKBROWSER_VERSION}/cloak-browser-linux-x64.tar.gz \
+    -o /tmp/cloak-browser.tar.gz \
+    && tar -xzf /tmp/cloak-browser.tar.gz -C /opt \
+    && ln -sf /opt/cloak-browser/cloak-browser ${CLOAKBROWSER_PATH} \
+    && rm /tmp/cloak-browser.tar.gz \
+    && chown -R flaresolverr:flaresolverr /opt/cloak-browser
+
 VOLUME /config
 
 # Install Python dependencies
 COPY requirements.txt .
-RUN pip install -r requirements.txt \
+RUN pip install --break-system-packages -r requirements.txt \
     # Remove temporary files
     && rm -rf /root/.cache
 
@@ -65,19 +72,3 @@ EXPOSE 8192
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 
 CMD ["/usr/local/bin/python", "-u", "/app/flaresolverr.py"]
-
-# Local build
-# docker build -t ngosang/flaresolverr:3.4.6 .
-# docker run -p 8191:8191 ngosang/flaresolverr:3.4.6
-
-# Multi-arch build
-# docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-# docker buildx create --use
-# docker buildx build -t ngosang/flaresolverr:3.4.6 --platform linux/386,linux/amd64,linux/arm/v7,linux/arm64/v8 .
-#   add --push to publish in DockerHub
-
-# Test multi-arch build
-# docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-# docker buildx create --use
-# docker buildx build -t ngosang/flaresolverr:3.4.6 --platform linux/arm/v7 --load .
-# docker run -p 8191:8191 --platform linux/arm/v7 ngosang/flaresolverr:3.4.6
