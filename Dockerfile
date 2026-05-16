@@ -41,14 +41,14 @@ RUN dpkg -i /libgl1-mesa-dri.deb \
 
 # Download and install CloakBrowser for anti-detection browsing
 # See: https://github.com/CloakHQ/CloakBrowser
-ENV CLOAKBROWSER_VERSION=1.0.0 \
+ENV CLOAKBROWSER_VERSION=chromium-v146.0.7680.177.4 \
     CLOAKBROWSER_PATH=/usr/local/bin/cloak-browser
-RUN curl -sL https://github.com/CloakHQ/CloakBrowser/releases/download/v${CLOAKBROWSER_VERSION}/cloak-browser-linux-x64.tar.gz \
-    -o /tmp/cloak-browser.tar.gz \
-    && tar -xzf /tmp/cloak-browser.tar.gz -C /opt \
-    && ln -sf /opt/cloak-browser/cloak-browser ${CLOAKBROWSER_PATH} \
-    && rm /tmp/cloak-browser.tar.gz \
-    && chown -R flaresolverr:flaresolverr /opt/cloak-browser
+RUN curl -sL https://github.com/CloakHQ/CloakBrowser/releases/download/v${CLOAKBROWSER_VERSION}/cloakbrowser-linux-x64.tar.gz \
+    -o /tmp/cloakbrowser.tar.gz \
+    && tar -xzf /tmp/cloakbrowser.tar.gz -C /opt \
+    && ln -sf /opt/cloakbrowser-linux-x64/cloakbrowser ${CLOAKBROWSER_PATH} \
+    && rm /tmp/cloakbrowser.tar.gz \
+    && chown -R flaresolverr:flaresolverr /opt/cloakbrowser-linux-x64
 
 VOLUME /config
 
