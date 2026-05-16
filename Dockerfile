@@ -46,9 +46,9 @@ ENV CLOAKBROWSER_VERSION=chromium-v146.0.7680.177.4 \
 RUN curl -sL https://github.com/CloakHQ/CloakBrowser/releases/download/${CLOAKBROWSER_VERSION}/cloakbrowser-linux-x64.tar.gz \
     -o /tmp/cloakbrowser.tar.gz \
     && tar -xzf /tmp/cloakbrowser.tar.gz -C /opt \
-    && ln -sf /opt/cloakbrowser-linux-x64/cloakbrowser ${CLOAKBROWSER_PATH} \
+    && ln -sf /opt/chrome/cloakbrowser ${CLOAKBROWSER_PATH} \
     && rm /tmp/cloakbrowser.tar.gz \
-    && chown -R flaresolverr:flaresolverr /opt/cloakbrowser-linux-x64
+    && chown -R flaresolverr:flaresolverr /opt/chrome
 
 VOLUME /config
 
