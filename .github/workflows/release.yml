@@ -27,6 +27,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           body: ${{ steps.github_changelog.outputs.changelog }}
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
 
@@ -59,5 +60,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: ./dist/flaresolverr_*
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
