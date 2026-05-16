@@ -5,7 +5,7 @@ services:
   flaresolverr:
     build:
       context: .
-      dockerfile: Dockerfile.cloak
+      dockerfile: Dockerfile
     container_name: flaresolverr-cloak
     environment:
       - LOG_LEVEL=${LOG_LEVEL:-info}
