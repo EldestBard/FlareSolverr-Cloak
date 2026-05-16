@@ -23,9 +23,9 @@ WORKDIR /app
 # Install dummy packages to satisfy chromium dependencies
 RUN dpkg -i /libgl1-mesa-dri.deb \
     && dpkg -i /adwaita-icon-theme.deb \
-    # Install dependencies
+    # Install dependencies (allow unauthenticated repos due to GPG issues on build server)
     && apt-get update \
-    && apt-get install -y --no-install-recommends chromium chromium-common chromium-driver xvfb dumb-init \
+    && apt-get install -y --allow-unauthenticated --no-install-recommends chromium chromium-common chromium-driver xvfb dumb-init \
         procps curl vim xauth \
     # Remove temporary files and hardware decoding libraries
     && rm -rf /var/lib/apt/lists/* \
